@@ -3,6 +3,7 @@ const { Router } = require('express');
 const CategoryController = require('./controllers/CategoryController');
 const ProductController = require('./controllers/ProductController');
 const EmployeeController = require('./controllers/EmployeeController');
+const SaleController = require('./controllers/SaleController');
 
 const router = Router();
 
@@ -20,5 +21,10 @@ router.get('/funcionario', EmployeeController.index);
 router.post('/funcionario', EmployeeController.store);
 router.patch('/funcionario', EmployeeController.update);
 router.delete('/funcionario/:id', EmployeeController.delete);
+
+router.get('/venda', SaleController.index);
+router.post('/venda', SaleController.store);
+router.patch('/venda', SaleController.update);
+router.delete('/venda/:id', SaleController.delete);
 
 module.exports = router;

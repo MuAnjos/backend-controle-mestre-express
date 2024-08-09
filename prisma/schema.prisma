@@ -50,12 +50,15 @@ model Estoque {
 }
 
 model Venda {
-  id           String        @id @default(uuid()) @db.Uuid
-  valor        Float
-  quantiadade  Int
-  dataVenda    DateTime      @default(now())
-  Produtos     Produto[]
-  Funcionarios Funcionario[]
+  id          String    @id @default(uuid()) @db.Uuid
+  valor       Float
+  quantiadade Int
+  dataVenda   DateTime  @default(now())
+  Produtos    Produto[]
+
+  funcionarioId String? @db.Uuid
+
+  Funcionario Funcionario? @relation(fields: [funcionarioId], references: [id])
 }
 
 enum CargoFuncionario {
