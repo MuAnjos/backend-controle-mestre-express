@@ -50,11 +50,11 @@ model Estoque {
 }
 
 model Venda {
-  id          String    @id @default(uuid()) @db.Uuid
-  valor       Float
-  quantiadade Int
-  dataVenda   DateTime  @default(now())
-  Produtos    Produto[]
+  id         String    @id @default(uuid()) @db.Uuid
+  valor      Float
+  quantidade Int
+  dataVenda  DateTime  @default(now())
+  Produtos   Produto[]
 
   funcionarioId String? @db.Uuid
 

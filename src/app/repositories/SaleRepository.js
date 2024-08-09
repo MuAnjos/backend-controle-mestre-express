@@ -3,24 +3,32 @@ const prisma = new PrismaClient();
 
 class SaleRepository {
   async findAll() {
-    const sales = await prisma.venda.findMany({
+    let sales = await prisma.venda.findMany({
       include: {
         Produtos: true,
         Funcionario: true,
       },
     });
 
+    sales = sales.map((sales) => ({
+      ...sales,
+      produtos: sales.Produtos,
+      funcionario: sales.Funcionario,
+    }));
+
     return sales;
   }
 
   async findById(id) {
-    const employee = await prisma.funcionario.findMany({
+    console.log(id);
+
+    const sale = await prisma.venda.findMany({
       where: {
         id: id,
       },
     });
 
-    return employee.length > 0 ? employee[0] : null;
+    return sale.length > 0 ? sale[0] : null;
   }
 
   async findByCpf(cpf) {
@@ -33,67 +41,28 @@ class SaleRepository {
     return employee.length > 0 ? employee[0] : null;
   }
 
-  async create({ valor, quantidade, dataVenda, funcionarioId }) {
-    const newSale = await prisma.funcionario.create({
+  async create({ valor, quantidade, produtosId, funcionarioId }) {
+    const products = await prisma.produto.findMany({
+      where: {
+        id: {
+          in: produtosId,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const newSale = await prisma.venda.create({
       data: {
         valor,
         quantidade,
-        dataVenda,
         funcionarioId,
+        Produtos: { connect: products.map((product) => ({ id: product.id })) },
       },
     });
 
     return { message: 'Venda criada' };
-  }
-
-  async update({ id, nome, cpf, apelido, endereco, email, telefone, cargo }) {
-    let Endereco;
-
-    if (endereco) {
-      Endereco = await prisma.endereco.findFirst({
-        where: {
-          cidade: endereco.cidade,
-          cep: endereco.cep,
-          rua: endereco.rua,
-          numero: parseInt(endereco.numero),
-          bairro: endereco.bairro,
-          complemento: endereco.complemento,
-        },
-      });
-
-      if (!Endereco) {
-        const newEndereco = await prisma.endereco.create({
-          data: {
-            cidade: endereco.cidade,
-            cep: endereco.cep,
-            numero: parseInt(endereco.numero),
-            rua: endereco.rua,
-            bairro: endereco.bairro,
-            complemento: endereco.complemento,
-          },
-          select: {
-            id: true,
-          },
-        });
-      }
-    }
-
-    const newEmployee = await prisma.funcionario.update({
-      where: {
-        id: id,
-      },
-      data: {
-        nome,
-        cpf,
-        Endereco: endereco ? { connect: { id: newEndereco.id } } : endereco,
-        email,
-        telefone,
-        cargo,
-        apelido,
-      },
-    });
-
-    return { message: 'Funcionario atualizado' };
   }
 
   async delete(id) {

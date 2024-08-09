@@ -22,9 +22,9 @@ router.post('/funcionario', EmployeeController.store);
 router.patch('/funcionario', EmployeeController.update);
 router.delete('/funcionario/:id', EmployeeController.delete);
 
-router.get('/venda', SaleController.index);
-router.post('/venda', SaleController.store);
-router.patch('/venda', SaleController.update);
-router.delete('/venda/:id', SaleController.delete);
+router.get('/vendas', SaleController.index);
+router.get('/vendas/:id', SaleController.show);
+router.post('/vendas', SaleController.store);
+router.delete('/vendas/:id', SaleController.delete);
 
 module.exports = router;

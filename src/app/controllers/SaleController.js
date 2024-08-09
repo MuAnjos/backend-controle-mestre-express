@@ -7,70 +7,36 @@ class SaleController {
     response.json(sales);
   }
 
-  show() {}
+  async show(request, response) {
+    const id = request.params;
 
-  async store(request, response) {
-    const { valor, quantidade, dataVenda, funcionarioId } = request.body;
+    let sale = await SaleRepository.findById(id.id);
 
-    if (!valor || !quantidade || !dataVenda || !funcionarioId) {
-      return response.status(400).json({
-        error:
-          'Todos os dados são necessários. (Valor, Quantidade, Data da Venda, FuncionarioId)',
-      });
-    }
-
-    const newEmployee = await SaleRepository.create({
-      nome,
-      cpf,
-      apelido,
-      endereco,
-      email,
-      telefone,
-      cargo,
-    });
-
-    response.json(newEmployee);
+    response.json(sale);
   }
 
-  async update(request, response) {
-    const { id, nome, cpf, apelido, endereco, email, telefone, cargo } =
-      request.body;
+  async store(request, response) {
+    const { valor, quantidade, funcionarioId, produtosId } = request.body;
 
-    if (!nome || !cpf || !email || !telefone || !cargo) {
+    if (!valor || !quantidade || !funcionarioId) {
       return response.status(400).json({
-        message:
-          'Todos os dados são necessários. (Nome, CPF, Endereço, Email, Telefone e Cargo)',
+        error:
+          'Todos os dados são necessários. (Valor, Quantidade, FuncionarioId)',
       });
     }
 
-    const foundEmployeeByCpf = await SaleRepository.findByCpf(cpf);
-
-    if (foundEmployeeByCpf && foundEmployeeByCpf.id !== id) {
-      if (foundEmployeeByCpf) {
-        return response
-          .status(409)
-          .json({ message: 'Este CPF já foi cadastrado' });
-      }
-    }
-
-    const updatedProduct = await SaleRepository.update({
-      id,
-      nome,
-      cpf,
-      apelido,
-      endereco,
-      email,
-      telefone,
-      cargo,
+    const newSale = await SaleRepository.create({
+      valor,
+      quantidade,
+      funcionarioId,
+      produtosId,
     });
 
-    response.json(updatedProduct);
+    response.json(newSale);
   }
 
   async delete(request, response) {
     const { id } = request.params;
-
-    console.log(id);
 
     if (!id) {
       return response
