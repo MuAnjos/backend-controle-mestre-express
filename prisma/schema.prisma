@@ -24,11 +24,12 @@ model Categoria {
 }
 
 model Produto {
-  id     String @id @default(uuid()) @db.Uuid
+  id     String  @id @default(uuid()) @db.Uuid
   nome   String
   marca  String
   preco  Float
   codigo Int
+  Vendas Venda[]
 
   categoriaId Int?
   estoqueId   String? @db.Uuid
@@ -36,7 +37,6 @@ model Produto {
 
   Categoria Categoria? @relation(fields: [categoriaId], references: [id])
   Estoque   Estoque?   @relation(fields: [estoqueId], references: [id])
-  Venda     Venda?     @relation(fields: [vendaId], references: [id])
 
   @@map("produtos")
 }
@@ -50,9 +50,40 @@ model Estoque {
 }
 
 model Venda {
-  id          String    @id @default(uuid()) @db.Uuid
-  valor       Float
-  quantiadade Int
-  dataVenda   DateTime  @default(now())
-  Produtos    Produto[]
+  id           String        @id @default(uuid()) @db.Uuid
+  valor        Float
+  quantiadade  Int
+  dataVenda    DateTime      @default(now())
+  Produtos     Produto[]
+  Funcionarios Funcionario[]
+}
+
+enum CargoFuncionario {
+  GERENTE
+  ATENDENDTE
+}
+
+model Funcionario {
+  id       String           @id @default(uuid()) @db.Uuid
+  nome     String
+  apelido  String
+  cpf      String           @unique
+  email    String
+  Endereco Endereco         @relation(fields: [enderecoId], references: [id])
+  telefone String
+  cargo    CargoFuncionario
+  Vendas   Venda[]
+
+  enderecoId String
+}
+
+model Endereco {
+  id          String        @id @default(uuid())
+  cidade      String
+  cep         String
+  numero      Int
+  rua         String
+  bairro      String
+  complemento String
+  Funcionario Funcionario[]
 }
