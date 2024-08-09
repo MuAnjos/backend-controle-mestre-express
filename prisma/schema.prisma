@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+//to do: Fornecedor, Cliente, Estoque, Produto e Funcionário
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Categoria {
+  id   Int    @id @default(autoincrement())
+  nome String
+
+  Produtos Produto[]
+
+  @@map("categorias")
+}
+
+model Produto {
+  id     String @id @default(uuid()) @db.Uuid
+  nome   String
+  marca  String
+  preco  Float
+  codigo Int
+
+  categoriaId Int?
+  estoqueId   String? @db.Uuid
+  vendaId     String? @db.Uuid
+
+  Categoria Categoria? @relation(fields: [categoriaId], references: [id])
+  Estoque   Estoque?   @relation(fields: [estoqueId], references: [id])
+  Venda     Venda?     @relation(fields: [vendaId], references: [id])
+
+  @@map("produtos")
+}
+
+model Estoque {
+  id         String @id @default(uuid()) @db.Uuid
+  nome       String
+  quantidade Int
+
+  Produtos Produto[]
+}
+
+model Venda {
+  id          String    @id @default(uuid()) @db.Uuid
+  valor       Float
+  quantiadade Int
+  dataVenda   DateTime  @default(now())
+  Produtos    Produto[]
+}
