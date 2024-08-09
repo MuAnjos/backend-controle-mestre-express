@@ -2,9 +2,14 @@ const EmployeeRepository = require('../repositories/EmployeeRepository');
 
 class EmployeeController {
   async index(request, response) {
-    const products = await EmployeeRepository.findAll();
+    let employees = await EmployeeRepository.findAll();
 
-    response.json(products);
+    employees = employees.map((employee) => ({
+      ...employee,
+      endereco: employee.Endereco,
+    }));
+
+    response.json(employees);
   }
 
   show() {}
@@ -43,8 +48,16 @@ class EmployeeController {
           'Todos os dados são necessários. (Nome, CPF, Endereço, Email, Telefone e Cargo)',
       });
     }
-    
-    
+
+    const foundEmployeeByCpf = await EmployeeRepository.findByCpf(cpf);
+
+    if (foundEmployeeByCpf && foundEmployeeByCpf.id !== id) {
+      if (foundEmployeeByCpf) {
+        return response
+          .status(409)
+          .json({ message: 'Este CPF já foi cadastrado' });
+      }
+    }
 
     const updatedProduct = await EmployeeRepository.update({
       id,

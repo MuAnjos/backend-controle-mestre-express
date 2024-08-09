@@ -3,7 +3,11 @@ const prisma = new PrismaClient();
 
 class EmployeeRepository {
   async findAll() {
-    const employees = await prisma.funcionario.findMany();
+    const employees = await prisma.funcionario.findMany({
+      include: {
+        Endereco: true,
+      },
+    });
 
     return employees;
   }
@@ -15,7 +19,17 @@ class EmployeeRepository {
       },
     });
 
-    return employee;
+    return employee.length > 0 ? employee[0] : null;
+  }
+
+  async findByCpf(cpf) {
+    const employee = await prisma.funcionario.findMany({
+      where: {
+        cpf: cpf,
+      },
+    });
+
+    return employee.length > 0 ? employee[0] : null;
   }
 
   async create({ nome, cpf, apelido, endereco, email, telefone, cargo }) {
@@ -74,10 +88,10 @@ class EmployeeRepository {
   }
 
   async update({ id, nome, cpf, apelido, endereco, email, telefone, cargo }) {
-    let newEndereco;
+    let Endereco;
 
     if (endereco) {
-      newEndereco = await prisma.endereco.findFirst({
+      Endereco = await prisma.endereco.findFirst({
         where: {
           cidade: endereco.cidade,
           cep: endereco.cep,
@@ -88,8 +102,8 @@ class EmployeeRepository {
         },
       });
 
-      if (!newEndereco) {
-        await prisma.endereco.create({
+      if (!Endereco) {
+        const newEndereco = await prisma.endereco.create({
           data: {
             cidade: endereco.cidade,
             cep: endereco.cep,
@@ -98,29 +112,12 @@ class EmployeeRepository {
             bairro: endereco.bairro,
             complemento: endereco.complemento,
           },
+          select: {
+            id: true,
+          },
         });
       }
-
-      newEndereco = await prisma.endereco.findFirst({
-        where: {
-          cidade: endereco.cidade,
-          cep: endereco.cep,
-          rua: endereco.rua,
-          numero: parseInt(endereco.numero),
-          bairro: endereco.bairro,
-          complemento: endereco.complemento,
-        },
-      });
     }
-
-    console.log(id);
-    console.log(id);
-    console.log(id);
-    console.log(id);
-    console.log(id);
-    console.log(id);
-    console.log(id);
-    console.log(id);
 
     const newEmployee = await prisma.funcionario.update({
       where: {
