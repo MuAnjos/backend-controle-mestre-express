@@ -65,6 +65,33 @@ class SaleRepository {
     return { message: 'Venda criada' };
   }
 
+  async update({ id, valor, quantidade, funcionarioId, produtosId }) {
+    const products = await prisma.produto.findMany({
+      where: {
+        id: {
+          in: produtosId,
+        },
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    const updatedSale = await prisma.venda.update({
+      where: {
+        id: id,
+      },
+      data: {
+        valor,
+        quantidade,
+        funcionarioId,
+        Produtos: { connect: products.map((product) => ({ id: product.id })) },
+      },
+    });
+
+    return { message: 'Venda atualizada' };
+  }
+
   async delete(id) {
     const sale = await prisma.venda.delete({
       where: {

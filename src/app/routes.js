@@ -25,6 +25,7 @@ router.delete('/funcionario/:id', EmployeeController.delete);
 router.get('/vendas', SaleController.index);
 router.get('/vendas/:id', SaleController.show);
 router.post('/vendas', SaleController.store);
+router.patch('/vendas', SaleController.update);
 router.delete('/vendas/:id', SaleController.delete);
 
 module.exports = router;

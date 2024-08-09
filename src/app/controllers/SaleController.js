@@ -35,6 +35,27 @@ class SaleController {
     response.json(newSale);
   }
 
+  async update(request, response) {
+    const { id, valor, quantidade, funcionarioId, produtosId } = request.body;
+
+    if (!valor || !quantidade || !funcionarioId) {
+      return response.status(400).json({
+        error:
+          'Todos os dados são necessários. (Valor, Quantidade, FuncionarioId)',
+      });
+    }
+
+    const newSale = await SaleRepository.update({
+      id,
+      valor,
+      quantidade,
+      funcionarioId,
+      produtosId,
+    });
+
+    response.json(newSale);
+  }
+
   async delete(request, response) {
     const { id } = request.params;
 
