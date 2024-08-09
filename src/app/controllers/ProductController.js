@@ -1,10 +1,10 @@
-const ProdutctRepository = require('../repositories/ProductRepository');
+const ProductRepository = require('../repositories/ProductRepository');
 
 class ProductController {
   async index(request, response) {
     const { categoryId } = request.query;
 
-    const products = await ProdutctRepository.findAll(categoryId);
+    const products = await ProductRepository.findAll(categoryId);
 
     response.json(products);
   }
@@ -20,8 +20,8 @@ class ProductController {
       });
     }
 
-    const isProductNameAvailable = await ProdutctRepository.findByName(nome);
-    const isProductMarcaAvailable = await ProdutctRepository.findByBrand(marca);
+    const isProductNameAvailable = await ProductRepository.findByName(nome);
+    const isProductMarcaAvailable = await ProductRepository.findByBrand(marca);
 
     if (isProductNameAvailable && isProductMarcaAvailable) {
       return response
@@ -29,7 +29,7 @@ class ProductController {
         .json({ message: 'Este produto já foi cadastrado' });
     }
 
-    const isProductCodigoAvailable = await ProdutctRepository.findByCode(cod);
+    const isProductCodigoAvailable = await ProductRepository.findByCode(cod);
 
     if (isProductCodigoAvailable) {
       return response
@@ -37,7 +37,7 @@ class ProductController {
         .json({ message: 'Este código já foi cadastrado' });
     }
 
-    const newProduct = await ProdutctRepository.create({
+    const newProduct = await ProductRepository.create({
       nome,
       marca,
       preco,
@@ -58,16 +58,18 @@ class ProductController {
       });
     }
 
-    const isProductNameAvailable = await ProdutctRepository.findByName(nome);
-    const isProductMarcaAvailable = await ProdutctRepository.findByBrand(marca);
+    const foundProductByName = await ProductRepository.findByName(nome);
+    const foundProductByBrand = await ProductRepository.findByBrand(marca);
 
-    if (isProductNameAvailable && isProductMarcaAvailable) {
-      return response
-        .status(422)
-        .json({ message: 'Este produto já foi cadastrado' });
+    if (foundProductByName && foundProductByName.id !== id) {
+      if (foundProductByName && foundProductByBrand) {
+        return response
+          .status(409)
+          .json({ message: 'Este produto já foi cadastrado' });
+      }
     }
 
-    const updatedProduct = await ProdutctRepository.update({
+    const updatedProduct = await ProductRepository.update({
       id,
       nome,
       marca,
@@ -88,13 +90,13 @@ class ProductController {
         .json({ message: 'O id do produto a ser deletado é necessário' });
     }
 
-    const productExists = await ProdutctRepository.findById(id);
+    const productExists = await ProductRepository.findById(id);
 
     if (!productExists) {
       return response.status(404).json({ message: 'Este produto não existe' });
     }
 
-    const deletedProduct = await ProdutctRepository.delete(id);
+    const deletedProduct = await ProductRepository.delete(id);
 
     response.json(deletedProduct);
   }

@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-class ProdutctRepository {
+class ProductRepository {
   async findAll(categoryId) {
     let products;
 
@@ -117,4 +117,4 @@ class ProdutctRepository {
   }
 }
 
-module.exports = new ProdutctRepository();
+module.exports = new ProductRepository();
